@@ -1,5 +1,11 @@
 bin/
 obj/
 publish/
+artifacts/
+dist/
 logs/
 *.user
+
+# Saved display profiles are specific to one machine's monitors.
+/normal.json
+/streaming.json

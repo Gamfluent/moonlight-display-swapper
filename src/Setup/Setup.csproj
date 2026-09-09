@@ -5,10 +5,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
-    <AssemblyName>DisplaySwitcher</AssemblyName>
-    <RootNamespace>DisplaySwitcher</RootNamespace>
-    <!-- WPF generates its own Main from App.xaml; this points the compiler at ours instead. -->
-    <StartupObject>DisplaySwitcher.Program</StartupObject>
+    <AssemblyName>Setup</AssemblyName>
+    <RootNamespace>DisplaySwitcher.Setup</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -16,14 +14,12 @@
     <PublishSingleFile>true</PublishSingleFile>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <!-- InvariantGlobalization must stay off: WPF data binding asks for a specific culture and
-         throws "Cannot find non-neutral culture related to 'en-us'" when only the invariant
-         culture exists, which kills the window before it is ever shown. -->
+    <!-- See the note in DisplaySwitcher.csproj: WPF binding requires a non-invariant culture. -->
     <InvariantGlobalization>false</InvariantGlobalization>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>1.0.0</Version>
-    <Product>Sunshine Display Switcher</Product>
+    <Product>Sunshine Display Switcher Setup</Product>
     <Company>Gamfluent</Company>
   </PropertyGroup>
 
@@ -32,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\settings.json" Link="settings.json" CopyToOutputDirectory="PreserveNewest" />
     <Page Include="..\Shared\Theme.xaml" Link="Theme.xaml" />
   </ItemGroup>
 

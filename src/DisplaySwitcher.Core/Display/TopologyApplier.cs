@@ -48,7 +48,7 @@ public sealed class TopologyApplier
             else
             {
                 _log.Info($"SUCCESS: snapshot '{snapshot.Name}' is live and verified.");
-                return Program.ExitSuccess;
+                return ExitCodes.Success;
             }
 
             if (attempt < _settings.MaxRetries)
@@ -63,11 +63,11 @@ public sealed class TopologyApplier
         if (Escalate(snapshot))
         {
             _log.Info($"SUCCESS: snapshot '{snapshot.Name}' verified after DDC/CI escalation.");
-            return Program.ExitSuccess;
+            return ExitCodes.Success;
         }
 
         _log.Error($"FAILURE: snapshot '{snapshot.Name}' could not be verified. Reporting failure rather than a false success.");
-        return Program.ExitVerificationFailed;
+        return ExitCodes.VerificationFailed;
     }
 
     private void LogIntent(DisplaySnapshot snapshot)
@@ -110,8 +110,8 @@ public sealed class TopologyApplier
                 _log.Error($"  Monitor not present in the live topology: {name}");
             }
 
-            _log.Error("Cannot build a display configuration while monitors are missing. " +
-                       "Check the cable/power, or re-run capture if the hardware changed.");
+            _log.Error("Cannot build a display configuration while a display that should be ON is missing. " +
+                       "Check the cable/power, or re-save the profile if the hardware changed.");
             failedDevicePaths = missing;
             fatal = true;
             return false;
@@ -160,7 +160,20 @@ public sealed class TopologyApplier
 
             if (match is null)
             {
-                missing.Add(monitor.Label);
+                // A display that should be ON but is absent is unrecoverable. A display that should
+                // be OFF and is absent is already in the desired state, so it is simply dropped from
+                // the request. Without this distinction, unplugging any unused monitor (an undocked
+                // laptop, a powered-off TV) would break every switch.
+                if (monitor.Active)
+                {
+                    missing.Add(monitor.Label);
+                }
+                else
+                {
+                    _log.Warn($"  {monitor.Label} should be OFF and is not connected right now; " +
+                              "omitting it from the request.");
+                }
+
                 continue;
             }
 
@@ -477,7 +490,7 @@ public sealed class TopologyApplier
     }
 
     private static int ExitCodeFor(List<string> failures) =>
-        failures.Count > 0 ? Program.ExitMonitorMissing : Program.ExitVerificationFailed;
+        failures.Count > 0 ? ExitCodes.MonitorMissing : ExitCodes.VerificationFailed;
 
     private sealed record ResolvedMonitor(
         MonitorSnapshot Snapshot,

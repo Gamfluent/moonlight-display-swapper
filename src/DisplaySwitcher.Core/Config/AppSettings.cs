@@ -51,6 +51,13 @@ public sealed class AppSettings
         }
     }
 
+    public void Save(string path)
+    {
+        Clamp();
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+        File.WriteAllText(path, JsonSerializer.Serialize(this, JsonOptions));
+    }
+
     private void Clamp()
     {
         VerifyDelaySeconds = Math.Clamp(VerifyDelaySeconds, 0, 60);
