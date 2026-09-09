@@ -1,0 +1,9 @@
+{
+  "verifyDelaySeconds": 2,
+  "maxRetries": 3,
+  "retryDelaySeconds": 5,
+  "enableDdcCiEscalation": true,
+  "logRetentionDays": 7,
+  "ddcCiPowerCycleSeconds": 3,
+  "ddcCiSettleSeconds": 5
+}
